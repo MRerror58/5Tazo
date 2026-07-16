@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+    Vista de inicio del juego Cincuentazo.
+    Permite al jugador seleccionar la cantidad de jugadores máquina (1, 2 o 3)
+    e iniciar la partida.
+-->
+<VBox alignment="CENTER" spacing="30" prefWidth="600" prefHeight="500"
+      styleClass="inicio-root"
+      stylesheets="@estilos.css"
+      xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.cincuentazo.InicioControlador">
+
+    <padding>
+        <Insets top="40" right="40" bottom="40" left="40"/>
+    </padding>
+
+    <!-- Título principal del juego -->
+    <Label text="♠ CINCUENTAZO ♥" styleClass="titulo-juego"/>
+
+    <!-- Subtítulo con descripción breve -->
+    <Label text="Juego de cartas - No excedas el 50"
+           styleClass="subtitulo"/>
+
+    <!-- Sección de selección de jugadores máquina -->
+    <VBox alignment="CENTER" spacing="15" styleClass="seleccion-panel">
+        <padding>
+            <Insets top="20" right="30" bottom="20" left="30"/>
+        </padding>
+
+        <Label text="¿Contra cuántas máquinas quieres jugar?"
+               styleClass="pregunta-label"/>
+
+        <!-- Opciones de jugadores máquina -->
+        <HBox alignment="CENTER" spacing="30">
+            <fx:define>
+                <ToggleGroup fx:id="grupoMaquinas"/>
+            </fx:define>
+
+            <RadioButton text="1 Máquina" toggleGroup="$grupoMaquinas"
+                         fx:id="radio1" selected="true"
+                         styleClass="radio-opcion"/>
+
+            <RadioButton text="2 Máquinas" toggleGroup="$grupoMaquinas"
+                         fx:id="radio2"
+                         styleClass="radio-opcion"/>
+
+            <RadioButton text="3 Máquinas" toggleGroup="$grupoMaquinas"
+                         fx:id="radio3"
+                         styleClass="radio-opcion"/>
+        </HBox>
+    </VBox>
+
+    <!-- Botón para iniciar el juego -->
+    <Button text="♣ Iniciar Juego ♦" onAction="#iniciarJuego"
+            styleClass="boton-iniciar"
+            fx:id="btnIniciar"/>
+
+    <!-- Créditos -->
+    <Label text="Fundamentos de Programación Orientada a Eventos - 2026"
+           styleClass="creditos"/>
+
+</VBox>

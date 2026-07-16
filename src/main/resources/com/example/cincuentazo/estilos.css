@@ -1,0 +1,226 @@
+/* Estilos del juego Cincuentazo - Tema Oscuro Profesional */
+
+/* ===================== PANTALLA DE INICIO ===================== */
+
+.inicio-root {
+    -fx-background-color: linear-gradient(to bottom, #1a1a2e, #16213e, #0f3460);
+}
+
+.titulo-juego {
+    -fx-font-size: 48px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e94560;
+    -fx-effect: dropshadow(gaussian, rgba(233,69,96,0.4), 15, 0, 0, 3);
+}
+
+.subtitulo {
+    -fx-font-size: 16px;
+    -fx-text-fill: #8899aa;
+    -fx-font-style: italic;
+}
+
+.seleccion-panel {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+    -fx-background-radius: 12;
+    -fx-border-color: rgba(233, 69, 96, 0.3);
+    -fx-border-radius: 12;
+}
+
+.pregunta-label {
+    -fx-font-size: 18px;
+    -fx-text-fill: #e0e0e0;
+    -fx-font-weight: bold;
+}
+
+.radio-opcion {
+    -fx-text-fill: #c0c0c0;
+    -fx-font-size: 15px;
+}
+
+.radio-opcion .radio {
+    -fx-background-color: #e94560;
+}
+
+.boton-iniciar {
+    -fx-background-color: #e94560;
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-padding: 12 40 12 40;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(233,69,96,0.4), 10, 0, 0, 3);
+}
+
+.boton-iniciar:hover {
+    -fx-background-color: #ff6b81;
+    -fx-effect: dropshadow(gaussian, rgba(233,69,96,0.6), 18, 0, 0, 0);
+}
+
+.creditos {
+    -fx-font-size: 11px;
+    -fx-text-fill: #556677;
+}
+
+/* ===================== MESA DE JUEGO ===================== */
+
+.juego-root {
+    -fx-background-color: linear-gradient(to bottom, #1a1a2e, #16213e);
+}
+
+/* ===================== CARTAS ===================== */
+
+.carta {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-min-width: 70;
+    -fx-min-height: 100;
+    -fx-max-width: 70;
+    -fx-max-height: 100;
+    -fx-alignment: center;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 5, 0, 1, 2);
+}
+
+.carta-visible {
+    -fx-background-color: #f5f5f5;
+    -fx-border-color: #444;
+    -fx-border-width: 1.5;
+}
+
+.carta-roja {
+    -fx-text-fill: #e94560;
+}
+
+.carta-negra {
+    -fx-text-fill: #1a1a2e;
+}
+
+.carta-oculta {
+    -fx-background-color: linear-gradient(to bottom right, #0f3460, #1a1a5e);
+    -fx-border-color: #e94560;
+    -fx-border-width: 1;
+    -fx-text-fill: #3a5a8a;
+    -fx-font-size: 28px;
+}
+
+.carta-jugable {
+    -fx-cursor: hand;
+}
+
+.carta-jugable:hover {
+    -fx-border-color: #e94560;
+    -fx-border-width: 2.5;
+    -fx-effect: dropshadow(gaussian, rgba(233,69,96,0.7), 14, 0, 0, 0);
+    -fx-translate-y: -8;
+}
+
+.carta-no-jugable {
+    -fx-opacity: 0.4;
+    -fx-cursor: default;
+}
+
+/* ===================== ETIQUETAS ===================== */
+
+.suma-caja {
+    -fx-background-color: rgba(233, 69, 96, 0.15);
+    -fx-border-color: #e94560;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-min-width: 80;
+    -fx-min-height: 80;
+    -fx-max-width: 80;
+    -fx-max-height: 80;
+    -fx-alignment: center;
+    -fx-effect: dropshadow(gaussian, rgba(233,69,96,0.3), 10, 0, 0, 0);
+}
+
+.suma-label {
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e94560;
+}
+
+.zona-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #8899aa;
+    -fx-font-weight: bold;
+}
+
+.info-mazo {
+    -fx-font-size: 12px;
+    -fx-text-fill: #667788;
+}
+
+.estado-label {
+    -fx-font-size: 15px;
+    -fx-text-fill: #e0e0e0;
+    -fx-font-weight: bold;
+    -fx-padding: 8 15 8 15;
+    -fx-background-color: rgba(0, 0, 0, 0.4);
+    -fx-background-radius: 8;
+}
+
+.jugador-humano-label {
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e94560;
+}
+
+.maquina-nombre {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #8899aa;
+}
+
+/* ===================== PANEL DE INFORMACIÓN ===================== */
+
+.panel-info {
+    -fx-background-color: rgba(0, 0, 0, 0.4);
+    -fx-background-radius: 10;
+}
+
+.info-titulo {
+    -fx-font-size: 13px;
+    -fx-text-fill: #667788;
+    -fx-font-weight: bold;
+}
+
+.turno-label {
+    -fx-font-size: 16px;
+    -fx-text-fill: #e94560;
+    -fx-font-weight: bold;
+}
+
+.temporizador-label {
+    -fx-font-size: 22px;
+    -fx-text-fill: #e0e0e0;
+    -fx-font-weight: bold;
+}
+
+.jugador-activo {
+    -fx-text-fill: #4ecca3;
+    -fx-font-size: 13px;
+}
+
+.jugador-eliminado {
+    -fx-text-fill: #e94560;
+    -fx-font-size: 13px;
+    -fx-strikethrough: true;
+}
+
+.boton-nueva-partida {
+    -fx-background-color: #e94560;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 8 20 8 20;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.boton-nueva-partida:hover {
+    -fx-background-color: #ff6b81;
+}

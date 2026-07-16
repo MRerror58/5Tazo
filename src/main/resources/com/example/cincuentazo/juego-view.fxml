@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+    Vista principal del juego Cincuentazo.
+    Muestra la mesa de juego con las cartas de los jugadores,
+    la carta de la mesa, la suma actual, y los controles del juego.
+
+    Layout:
+    - TOP: cartas de los jugadores máquina (boca abajo)
+    - CENTER: carta de la mesa + suma actual + mazo
+    - BOTTOM: cartas del jugador humano (boca arriba, clickeables)
+    - RIGHT: panel de información (turno, estado, temporizador)
+-->
+<BorderPane styleClass="juego-root"
+            stylesheets="@estilos.css"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.cincuentazo.JuegoControlador">
+
+    <padding>
+        <Insets top="15" right="15" bottom="15" left="15"/>
+    </padding>
+
+    <!-- ARRIBA: Zona de jugadores máquina (lado a lado) -->
+    <top>
+        <HBox alignment="CENTER" spacing="25" fx:id="panelMaquinas">
+            <padding>
+                <Insets bottom="10"/>
+            </padding>
+        </HBox>
+    </top>
+
+    <!-- IZQUIERDA: Panel de balanceo vacío para centrar la mesa de juego -->
+    <left>
+        <VBox prefWidth="180" mouseTransparent="true"/>
+    </left>
+
+    <!-- CENTRO: Mesa de juego -->
+    <center>
+        <VBox alignment="CENTER" spacing="20">
+            <!-- Zona central: Suma | Mesa | Mazo -->
+            <HBox alignment="CENTER" spacing="35">
+                <!-- Suma actual en cuadro elegante -->
+                <VBox alignment="CENTER" spacing="5">
+                    <Label text="Suma" styleClass="zona-label"/>
+                    <VBox alignment="CENTER" styleClass="suma-caja">
+                        <Label fx:id="lblSuma" text="0" styleClass="suma-label"/>
+                    </VBox>
+                </VBox>
+
+                <!-- Carta visible en la mesa (misma clase que las cartas del jugador) -->
+                <VBox alignment="CENTER" spacing="5">
+                    <Label text="Mesa" styleClass="zona-label"/>
+                    <Label fx:id="lblCartaMesa" text=""
+                           styleClass="carta carta-visible"/>
+                </VBox>
+
+                <!-- Mazo de cartas (mismo estilo que las cartas boca abajo de las máquinas) -->
+                <VBox alignment="CENTER" spacing="5">
+                    <Label text="Mazo" styleClass="zona-label"/>
+                    <Label text="🂠" styleClass="carta carta-oculta"/>
+                    <Label fx:id="lblCartasRestantes" text="52"
+                           styleClass="info-mazo"/>
+                </VBox>
+            </HBox>
+
+            <!-- Mensaje de estado del juego -->
+            <Label fx:id="lblEstado" text=""
+                   styleClass="estado-label"/>
+        </VBox>
+    </center>
+
+    <!-- ABAJO: Cartas del jugador humano -->
+    <bottom>
+        <VBox alignment="CENTER" spacing="10">
+            <padding>
+                <Insets top="10"/>
+            </padding>
+
+            <Label fx:id="lblJugadorHumano" text="Tu mano:"
+                   styleClass="jugador-humano-label"/>
+
+            <!-- Contenedor de las cartas del jugador humano -->
+            <FlowPane fx:id="panelCartasHumano" alignment="CENTER"
+                      hgap="10" vgap="10">
+            </FlowPane>
+        </VBox>
+    </bottom>
+
+    <!-- DERECHA: Panel de información -->
+    <right>
+        <VBox spacing="15" styleClass="panel-info" alignment="TOP_CENTER"
+              prefWidth="180">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="15"/>
+            </padding>
+
+            <!-- Turno actual -->
+            <VBox spacing="5">
+                <Label text="Turno:" styleClass="info-titulo"/>
+                <Label fx:id="lblTurno" text="" styleClass="turno-label"/>
+            </VBox>
+
+            <!-- Temporizador del turno -->
+            <VBox spacing="5">
+                <Label text="Tiempo:" styleClass="info-titulo"/>
+                <Label fx:id="lblTemporizador" text="0s"
+                       styleClass="temporizador-label"/>
+            </VBox>
+
+            <!-- Estado de los jugadores -->
+            <VBox spacing="5" fx:id="panelEstadoJugadores">
+                <Label text="Jugadores:" styleClass="info-titulo"/>
+            </VBox>
+
+            <!-- Botón para nueva partida (visible al finalizar) -->
+            <Button fx:id="btnNuevaPartida" text="Nueva Partida"
+                    onAction="#nuevaPartida"
+                    styleClass="boton-nueva-partida"
+                    visible="false"/>
+        </VBox>
+    </right>
+
+</BorderPane>
