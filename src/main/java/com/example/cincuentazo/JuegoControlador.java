@@ -106,21 +106,25 @@ public class JuegoControlador {
         // Suma actual
         lblSuma.setText(String.valueOf(modelo.getSumaActual()));
 
-        // Cartas humano
+        // Cartas humano ---
         panelCartasHumano.getChildren().clear();// eliminamos
         Jugador humano = modelo.getJugadores().get(0);
         if (humano.estaEliminado()) {
             lblJugadorHumano.setText("Jugador (ELIMINADO)");
         } else {
             lblJugadorHumano.setText("Tu mano:");
-            List<Carta> cartasJugables = humano.obtenerCartasJugables(modelo.getSumaActual());
+
+            List<Carta> cartasJugables = humano.obtenerCartasJugables(modelo.getSumaActual()); // Cartas jugables
+
             for (Carta carta : humano.getMano()) {// por cada carta en mano
                 Label lblCarta = new Label(carta.toString());
                 lblCarta.getStyleClass().addAll("carta", "carta-visible",
                         carta.getPalo().esRojo() ? "carta-roja" : "carta-negra");// que carta es
+
                 if (turnoHumano && cartasJugables.contains(carta)) {// si es una carta jugable
                     lblCarta.getStyleClass().add("carta-jugable");
                     lblCarta.setOnMouseClicked(event -> manejarClickCarta(carta));// añadir control de click
+
                 } else if (turnoHumano) {// si no, no tiee controlador de click
                     lblCarta.getStyleClass().add("carta-no-jugable");
                 }
@@ -128,7 +132,7 @@ public class JuegoControlador {
             }
         }
 
-        // Cartas máquinas
+        // Cartas máquinas---
         panelMaquinas.getChildren().clear();
         for (int i = 1; i < modelo.getJugadores().size(); i++) {
             // Confirmaciones por si la maquina esta eliminada
@@ -154,7 +158,7 @@ public class JuegoControlador {
             panelMaquinas.getChildren().add(panelM);
         }
 
-        // Panel info lateral (Turno actual y estado jugadores)
+        // Panel info lateral (Turno actual y estado jugadores)---
         lblTurno.setText(modelo.getJugadorActual().getNombre());
         if (panelEstadoJugadores.getChildren().size() > 1) {
             panelEstadoJugadores.getChildren().remove(1, panelEstadoJugadores.getChildren().size());
@@ -166,7 +170,7 @@ public class JuegoControlador {
             panelEstadoJugadores.getChildren().add(lblJ);
         }
 
-        // Cartas restantes
+        // Cartas restantes---
         lblCartasRestantes.setText(String.valueOf(modelo.getMazo().cantidadCartas()));
     }
 
@@ -179,8 +183,9 @@ public class JuegoControlador {
     private void manejarClickCarta(Carta carta) {
         if (!turnoHumano)
             return; // ignora clicks fuera del turno humano, Evita acciones del usuario cuando el
-                    // turno pertenece a otro jugador.
-        int valorAs = 1;
+
+        // AS
+        int valorAs = 1; // el valor minimo para la confirmacion de tirar o no la carta
         if (carta.esAs()) { // el AS permite elegir 1 o 10
             valorAs = preguntarValorAs(carta);
             if (valorAs == -1)
@@ -190,6 +195,8 @@ public class JuegoControlador {
         try {
             modelo.jugarCarta(modelo.getJugadores().get(0), carta, valorAs);
             lblEstado.setText("Jugaste: " + carta + " (+" + valorAs + ")");
+
+            // Reponer mano
             modelo.tomarCartaDelMazo(modelo.getJugadores().get(0));
 
             turnoHumano = false;
@@ -231,7 +238,8 @@ public class JuegoControlador {
         if (resultado.isPresent()) {
             if (resultado.get() == boton1)
                 return 1;// No se confirma si tiene suma maxima pq algo mas ya lo hace
-            if (resultado.get() == boton10) {// Indicamos al jugador si puede o no lanzar este valor
+            // Restriccion en caso de ser 10
+            if (resultado.get() == boton10) {
                 if (modelo.getSumaActual() + 10 > JuegoModelo.SUMA_MAXIMA) { // evita pasar de 50
                     mostrarAlerta("No permitido", "Sumar 10 excedería el límite de 50.");
                     return 1;
@@ -267,7 +275,8 @@ public class JuegoControlador {
             try {
                 while (!modelo.isJuegoTerminado() && modelo.getJugadorActual().esMaquina()) { // repite mientras sea
                                                                                               // turno de máquina
-                    Jugador maquina = modelo.getJugadorActual();
+                    Jugador maquina = modelo.getJugadorActual(); //¿Cual maquina es?
+                
 
                     if (modelo.verificarEliminacion(maquina)) { // si no puede jugar, queda eliminada
                         Platform.runLater(() -> {
@@ -288,6 +297,8 @@ public class JuegoControlador {
                     List<Carta> jugables = maquina.obtenerCartasJugables(modelo.getSumaActual());// Cartas en su mano
                     if (!jugables.isEmpty()) { // juega una carta aleatoria de las válidas
                         Carta cartaElegida = jugables.get(random.nextInt(jugables.size()));
+
+                        //Siempre juega el AS como 10 si no se pasa
                         int valorAs = (cartaElegida.esAs() && modelo.getSumaActual() + 10 <= JuegoModelo.SUMA_MAXIMA)
                                 ? 10
                                 : 1; // AS = 10 si no se pasa
@@ -298,7 +309,7 @@ public class JuegoControlador {
                             actualizarVista();
                         });
 
-                        Thread.sleep(150 + random.nextInt(200));
+                        Thread.sleep(100 + random.nextInt(100));
                         modelo.tomarCartaDelMazo(maquina); // repone su mano
                         Platform.runLater(() -> actualizarVista());
                     }
@@ -308,7 +319,6 @@ public class JuegoControlador {
                         Platform.runLater(() -> finalizarJuego());
                         return;
                     }
-                    // No reiniciar temporizador aquí, se hace al volver al humano
                 }
 
                 if (!modelo.isJuegoTerminado()) { // vuelve el turno al humano
@@ -318,7 +328,7 @@ public class JuegoControlador {
                             lblEstado.setText("¡No puedes jugar ninguna carta! Has sido ELIMINADO.");
                             actualizarVista();
                         });
-                        Thread.sleep(350);
+                        Thread.sleep(150);
                         modelo.siguienteTurno();
                         if (modelo.hayGanador()) {
                             Platform.runLater(() -> finalizarJuego());
@@ -365,7 +375,6 @@ public class JuegoControlador {
          * Bucle que incrementa los segundos cada segundo mientras esté corriendo y no
          * esté pausado.
          */
-        @Override
         public void run() {
             while (corriendo) { // bucle principal del temporizador
                 try {
