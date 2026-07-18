@@ -13,27 +13,56 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;import javafx.stage.Stage;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
+/**
+ * Controlador principal para manejar la interfaz y el flujo visual del juego.
+ *
+ * @author Juan Camilo Valverde López
+ * @version 1.0
+ */
 public class JuegoControlador {
+    /** Panel visual donde se muestran las cartas tapadas de las máquinas. */
     @FXML private HBox panelMaquinas;
+    
+    /** Etiquetas de texto para mostrar la suma, carta en mesa, mazo, estado, turno y temporizador. */
     @FXML private Label lblSuma, lblCartaMesa, lblCartasRestantes, lblEstado, lblJugadorHumano, lblTurno, lblTemporizador;
+    
+    /** Panel contenedor para las cartas del jugador humano. */
     @FXML private FlowPane panelCartasHumano;
+    
+    /** Panel contenedor para la lista de estados de cada jugador (activo/eliminado). */
     @FXML private VBox panelEstadoJugadores;
+    
+    /** Botón para regresar al inicio y comenzar una nueva partida al finalizar el juego. */
     @FXML private Button btnNuevaPartida;
 
+    /** Instancia del modelo del juego que maneja las reglas y el estado de la baraja. */
     private JuegoModelo modelo;
+    
+    /** Número de máquinas oponentes en la partida. */
     private int numMaquinas;
+    
+    /** Bandera para saber si es el turno del jugador humano. */
     private boolean turnoHumano;
+    
+    /** Hilo para el conteo de segundos del temporizador del turno del jugador. */
     private HiloTemporizador hiloTemporizador;
+    
+    /** Generador de números aleatorios para las decisiones de las máquinas. */
     private final Random random = new Random();
 
-    // Inicar el juego
+    /**
+     * Inicializa el estado del controlador y prepara la partida.
+     *
+     * @param numMaquinas Cantidad de oponentes controlados por la computadora.
+     */
     public void inicializarJuego(int numMaquinas) {
         this.numMaquinas = numMaquinas;
         this.modelo = new JuegoModelo();
@@ -44,7 +73,9 @@ public class JuegoControlador {
         iniciarTemporizador();
     }
 
-    //Actualizador de elementos
+    /**
+     * Actualiza todos los elementos gráficos de la pantalla con el estado actual del modelo.
+     */
     private void actualizarVista() {
         // Carta de la mesa
         Carta cartaMesa = modelo.getCartaMesa();
@@ -118,6 +149,11 @@ public class JuegoControlador {
         lblCartasRestantes.setText(String.valueOf(modelo.getMazo().cantidadCartas()));
     }
 
+    /**
+     * Procesa la carta seleccionada por el jugador humano y aplica las reglas del turno.
+     *
+     * @param carta Carta seleccionada de la mano del jugador.
+     */
     private void manejarClickCarta(Carta carta) {
         if (!turnoHumano) return; // ignora clicks fuera del turno humano
         int valorAs = 1;
@@ -147,6 +183,12 @@ public class JuegoControlador {
         }
     }
 
+    /**
+     * Muestra un cuadro de diálogo para que el usuario elija si el As vale 1 o 10.
+     *
+     * @param carta Carta de tipo As seleccionada.
+     * @return El valor elegido (1 o 10) o -1 si se cancela la acción.
+     */
     private int preguntarValorAs(Carta carta) {// Cuando se lanza el As salta ventana emerguente
         Alert dialogo = new Alert(Alert.AlertType.CONFIRMATION);
         dialogo.setTitle("As lanzado");
@@ -174,13 +216,25 @@ public class JuegoControlador {
         return -1; // canceló
     }
 
+    /**
+     * Inicia y ejecuta los turnos automáticos de los oponentes máquina de forma asíncrona.
+     */
     private void ejecutarTurnosMaquinas() {//Iniciamos el turno de maquina
         Thread hiloMaquina = new HiloMaquina();
         hiloMaquina.setDaemon(true);
         hiloMaquina.start();
     }
 
+    /**
+     * Hilo encargado de procesar las acciones y retrasos lógicos de las máquinas.
+     *
+     * @author Juan Camilo Valverde López
+     * @version 1.0
+     */
     private class HiloMaquina extends Thread {
+        /**
+         * Ejecuta la lógica automática para cada máquina en su respectivo turno.
+         */
         @Override
         public void run() {
             try {
@@ -260,11 +314,25 @@ public class JuegoControlador {
         }
     }
 
+    /**
+     * Hilo del temporizador que lleva el control del tiempo transcurrido en segundos.
+     *
+     * @author Juan Camilo Valverde López
+     * @version 1.0
+     */
     private class HiloTemporizador extends Thread {
+        /** Bandera para controlar el bucle principal de ejecución del hilo. */
         private volatile boolean corriendo = true;
+        
+        /** Bandera para pausar el conteo del tiempo. */
         private volatile boolean pausado = false;
+        
+        /** Cantidad de segundos transcurridos. */
         private int segundos = 0;
 
+        /**
+         * Bucle que incrementa los segundos cada segundo mientras esté corriendo y no esté pausado.
+         */
         @Override
         public void run() {
             while (corriendo) { // bucle principal del temporizador
@@ -282,29 +350,60 @@ public class JuegoControlador {
             }
         }
 
+        /**
+         * Detiene definitivamente el temporizador.
+         */
         public void detener() { corriendo = false; this.interrupt(); } // termina el hilo
+        
+        /**
+         * Pausa el conteo del tiempo.
+         */
         public void pausar() { pausado = true; } // congela el contador
+        
+        /**
+         * Reanuda el conteo del tiempo.
+         */
         public void reanudar() { pausado = false; } // sigue contando
+        
+        /**
+         * Reinicia el conteo de segundos a cero.
+         */
         public void reiniciar() { segundos = 0; Platform.runLater(() -> lblTemporizador.setText("0s")); } // vuelve a 0
     }
 
-    //UTILIDADES del temporizador
+    /**
+     * Inicializa y arranca el hilo del temporizador.
+     */
     private void iniciarTemporizador() {
         hiloTemporizador = new HiloTemporizador();
         hiloTemporizador.setDaemon(true);
         hiloTemporizador.start();
     }
+    
+    /**
+     * Reinicia el temporizador de juego a cero segundos.
+     */
     private void reiniciarTemporizador() {
         if (hiloTemporizador != null) hiloTemporizador.reiniciar();
     }
+    
+    /**
+     * Pausa el conteo de tiempo del temporizador.
+     */
     private void pausarTemporizador() {
         if (hiloTemporizador != null) hiloTemporizador.pausar();
     }
+    
+    /**
+     * Reanuda el temporizador pausado previamente.
+     */
     private void reanudarTemporizador() {
         if (hiloTemporizador != null) hiloTemporizador.reanudar();
     }
 
-
+    /**
+     * Declara el fin del juego, detiene el temporizador y muestra el ganador.
+     */
     private void finalizarJuego() {//Fin
         if (hiloTemporizador != null) {
             hiloTemporizador.detener(); // ya no cuenta tiempo
@@ -321,6 +420,9 @@ public class JuegoControlador {
         actualizarVista();
     }
 
+    /**
+     * Regresa a la pantalla inicial para configurar e iniciar una nueva partida.
+     */
     @FXML
     private void nuevaPartida() {
         if (hiloTemporizador != null) {
@@ -336,6 +438,13 @@ public class JuegoControlador {
             System.err.println("Error al cargar la vista de inicio: " + e.getMessage());
         }
     }
+    
+    /**
+     * Muestra una ventana de alerta de tipo informativo con un título y mensaje específico.
+     *
+     * @param titulo Título de la alerta.
+     * @param mensaje Detalle explicativo de la alerta.
+     */
     private void mostrarAlerta(String titulo, String mensaje) {
         Alert alerta = new Alert(Alert.AlertType.INFORMATION);
         alerta.setTitle(titulo);

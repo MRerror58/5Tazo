@@ -10,10 +10,24 @@ import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
 import java.io.IOException;
 
+/**
+ * Controlador de la pantalla de inicio del juego.
+ *
+ * @author Juan Camilo Valverde López
+ * @version 1.0
+ */
 public class InicioControlador {
+    /** Grupo que asocia los botones de opción para seleccionar los rivales. */
     @FXML private ToggleGroup grupoMaquinas;
+    
+    /** Botones para elegir jugar contra 1, 2 o 3 máquinas. */
     @FXML private RadioButton radio1, radio2, radio3;
 
+    /**
+     * Inicia la partida cargando la pantalla de juego con los oponentes configurados.
+     *
+     * @param event Evento de clic en el botón de inicio.
+     */
     @FXML
     private void iniciarJuego(ActionEvent event) {
         int numMaquinas = radio2.isSelected() ? 2 : (radio3.isSelected() ? 3 : 1); // lee la opción elegida
@@ -32,4 +46,4 @@ public class InicioControlador {
             System.err.println("Error al cargar la vista del juego: " + e.getMessage());
         }
     }
-    }
+}

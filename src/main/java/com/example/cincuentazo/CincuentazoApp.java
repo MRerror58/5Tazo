@@ -8,23 +8,18 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 /**
- * Clase principal de la aplicación Cincuentazo.
- * Extiende {@link Application} de JavaFX para iniciar la interfaz gráfica.
+ * Clase principal que arranca la aplicación Cincuentazo.
  *
- * <p>Esta clase es el punto de entrada de la aplicación.
- * Carga la vista de inicio donde el jugador puede seleccionar
- * la cantidad de máquinas contra las que desea jugar.</p>
- *
- * @author Equipo Cincuentazo
+ * @author Juan Camilo Valverde López
+ * @version 1.0
  */
 public class CincuentazoApp extends Application {
 
     /**
-     * Método principal de JavaFX que se ejecuta al iniciar la aplicación.
-     * Carga el archivo FXML de la pantalla de inicio y configura la ventana.
+     * Inicia y configura el escenario principal de JavaFX.
      *
-     * @param stage la ventana principal de la aplicación
-     * @throws IOException si no se puede cargar el archivo FXML
+     * @param stage Escenario principal de la aplicación.
+     * @throws IOException Si ocurre un error al cargar el archivo FXML.
      */
     @Override
     public void start(Stage stage) throws IOException {
@@ -46,11 +41,9 @@ public class CincuentazoApp extends Application {
     }
 
     /**
-     * Método main para iniciar la aplicación.
-     * Llama a {@link Application#launch(String...)} que internamente
-     * crea una instancia de esta clase y ejecuta {@link #start(Stage)}.
+     * Método de entrada principal de la aplicación Java.
      *
-     * @param args argumentos de línea de comandos (no utilizados)
+     * @param args Argumentos de la línea de comandos.
      */
     public static void main(String[] args) {
         launch(args);
