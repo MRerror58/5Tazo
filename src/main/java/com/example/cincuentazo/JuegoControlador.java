@@ -29,32 +29,48 @@ import java.util.Random;
  */
 public class JuegoControlador {
     /** Panel visual donde se muestran las cartas tapadas de las máquinas. */
-    @FXML private HBox panelMaquinas;
-    
-    /** Etiquetas de texto para mostrar la suma, carta en mesa, mazo, estado, turno y temporizador. */
-    @FXML private Label lblSuma, lblCartaMesa, lblCartasRestantes, lblEstado, lblJugadorHumano, lblTurno, lblTemporizador;
-    
-    /** Panel contenedor para las cartas del jugador humano. */
-    @FXML private FlowPane panelCartasHumano;
-    
-    /** Panel contenedor para la lista de estados de cada jugador (activo/eliminado). */
-    @FXML private VBox panelEstadoJugadores;
-    
-    /** Botón para regresar al inicio y comenzar una nueva partida al finalizar el juego. */
-    @FXML private Button btnNuevaPartida;
+    @FXML
+    private HBox panelMaquinas;
 
-    /** Instancia del modelo del juego que maneja las reglas y el estado de la baraja. */
+    /**
+     * Etiquetas de texto para mostrar la suma, carta en mesa, mazo, estado, turno y
+     * temporizador.
+     */
+    @FXML
+    private Label lblSuma, lblCartaMesa, lblCartasRestantes, lblEstado, lblJugadorHumano, lblTurno, lblTemporizador;
+
+    /** Panel contenedor para las cartas del jugador humano. */
+    @FXML
+    private FlowPane panelCartasHumano;
+
+    /**
+     * Panel contenedor para la lista de estados de cada jugador (activo/eliminado).
+     */
+    @FXML
+    private VBox panelEstadoJugadores;
+
+    /**
+     * Botón para regresar al inicio y comenzar una nueva partida al finalizar el
+     * juego.
+     */
+    @FXML
+    private Button btnNuevaPartida;
+
+    /**
+     * Instancia del modelo del juego que maneja las reglas y el estado de la
+     * baraja.
+     */
     private JuegoModelo modelo;
-    
+
     /** Número de máquinas oponentes en la partida. */
     private int numMaquinas;
-    
+
     /** Bandera para saber si es el turno del jugador humano. */
     private boolean turnoHumano;
-    
+
     /** Hilo para el conteo de segundos del temporizador del turno del jugador. */
     private HiloTemporizador hiloTemporizador;
-    
+
     /** Generador de números aleatorios para las decisiones de las máquinas. */
     private final Random random = new Random();
 
@@ -74,12 +90,14 @@ public class JuegoControlador {
     }
 
     /**
-     * Actualiza todos los elementos gráficos de la pantalla con el estado actual del modelo.
+     * Actualiza todos los elementos gráficos de la pantalla con el estado actual
+     * del modelo.
      */
     private void actualizarVista() {
         // Carta de la mesa
-        Carta cartaMesa = modelo.getCartaMesa();
-        if (cartaMesa != null) { //Cuando no hay cartas en mesa:
+        Carta cartaMesa = modelo.getCartaMesa(); // Sincroniza todos los elementos visuales con el estado actual de la
+                                                 // partida.
+        if (cartaMesa != null) { // Cuando no hay cartas en mesa:
             lblCartaMesa.setText(cartaMesa.toString());
             lblCartaMesa.getStyleClass().removeAll("carta-roja", "carta-negra");
             lblCartaMesa.getStyleClass().add(cartaMesa.getPalo().esRojo() ? "carta-roja" : "carta-negra");
@@ -89,20 +107,21 @@ public class JuegoControlador {
         lblSuma.setText(String.valueOf(modelo.getSumaActual()));
 
         // Cartas humano
-        panelCartasHumano.getChildren().clear();//eliminamos
+        panelCartasHumano.getChildren().clear();// eliminamos
         Jugador humano = modelo.getJugadores().get(0);
         if (humano.estaEliminado()) {
             lblJugadorHumano.setText("Jugador (ELIMINADO)");
         } else {
             lblJugadorHumano.setText("Tu mano:");
             List<Carta> cartasJugables = humano.obtenerCartasJugables(modelo.getSumaActual());
-            for (Carta carta : humano.getMano()) {//por cada carta en mano
+            for (Carta carta : humano.getMano()) {// por cada carta en mano
                 Label lblCarta = new Label(carta.toString());
-                lblCarta.getStyleClass().addAll("carta", "carta-visible", carta.getPalo().esRojo() ? "carta-roja" : "carta-negra");//que carta es
-                if (turnoHumano && cartasJugables.contains(carta)) {//si es una carta jugable
+                lblCarta.getStyleClass().addAll("carta", "carta-visible",
+                        carta.getPalo().esRojo() ? "carta-roja" : "carta-negra");// que carta es
+                if (turnoHumano && cartasJugables.contains(carta)) {// si es una carta jugable
                     lblCarta.getStyleClass().add("carta-jugable");
-                    lblCarta.setOnMouseClicked(event -> manejarClickCarta(carta));//añadir control de click
-                } else if (turnoHumano) {//si no, no tiee controlador de click
+                    lblCarta.setOnMouseClicked(event -> manejarClickCarta(carta));// añadir control de click
+                } else if (turnoHumano) {// si no, no tiee controlador de click
                     lblCarta.getStyleClass().add("carta-no-jugable");
                 }
                 panelCartasHumano.getChildren().add(lblCarta);
@@ -112,15 +131,16 @@ public class JuegoControlador {
         // Cartas máquinas
         panelMaquinas.getChildren().clear();
         for (int i = 1; i < modelo.getJugadores().size(); i++) {
-            //Confirmaciones por si la maquina esta eliminada
+            // Confirmaciones por si la maquina esta eliminada
             Jugador maquina = modelo.getJugadores().get(i);
             VBox panelM = new VBox(5);
             panelM.setAlignment(Pos.CENTER);
             Label lblNombre = new Label(maquina.getNombre() + (maquina.estaEliminado() ? " ❌" : ""));
-            lblNombre.getStyleClass().addAll("maquina-nombre", maquina.estaEliminado() ? "jugador-eliminado" : "jugador-activo");
+            lblNombre.getStyleClass().addAll("maquina-nombre",
+                    maquina.estaEliminado() ? "jugador-eliminado" : "jugador-activo");
             panelM.getChildren().add(lblNombre);
 
-            //En caso de no estarlo
+            // En caso de no estarlo
             if (!maquina.estaEliminado()) {
                 HBox cartasM = new HBox(5);
                 cartasM.setAlignment(Pos.CENTER);
@@ -140,7 +160,8 @@ public class JuegoControlador {
             panelEstadoJugadores.getChildren().remove(1, panelEstadoJugadores.getChildren().size());
         }
         for (Jugador j : modelo.getJugadores()) {
-            Label lblJ = new Label((j.estaEliminado() ? "✗ " : "✓ ") + j.getNombre() + (!j.estaEliminado() ? " (" + j.getMano().size() + " cartas)" : ""));
+            Label lblJ = new Label((j.estaEliminado() ? "✗ " : "✓ ") + j.getNombre()
+                    + (!j.estaEliminado() ? " (" + j.getMano().size() + " cartas)" : ""));
             lblJ.getStyleClass().add(j.estaEliminado() ? "jugador-eliminado" : "jugador-activo");
             panelEstadoJugadores.getChildren().add(lblJ);
         }
@@ -150,16 +171,20 @@ public class JuegoControlador {
     }
 
     /**
-     * Procesa la carta seleccionada por el jugador humano y aplica las reglas del turno.
+     * Procesa la carta seleccionada por el jugador humano y aplica las reglas del
+     * turno.
      *
      * @param carta Carta seleccionada de la mano del jugador.
      */
     private void manejarClickCarta(Carta carta) {
-        if (!turnoHumano) return; // ignora clicks fuera del turno humano
+        if (!turnoHumano)
+            return; // ignora clicks fuera del turno humano, Evita acciones del usuario cuando el
+                    // turno pertenece a otro jugador.
         int valorAs = 1;
         if (carta.esAs()) { // el AS permite elegir 1 o 10
             valorAs = preguntarValorAs(carta);
-            if (valorAs == -1) return; // canceló la selección
+            if (valorAs == -1)
+                return; // canceló la selección
         }
 
         try {
@@ -192,20 +217,21 @@ public class JuegoControlador {
     private int preguntarValorAs(Carta carta) {// Cuando se lanza el As salta ventana emerguente
         Alert dialogo = new Alert(Alert.AlertType.CONFIRMATION);
         dialogo.setTitle("As lanzado");
-        dialogo.setHeaderText("¿Qué valor deseas para el " + carta + "?");//texto de opciones
+        dialogo.setHeaderText("¿Qué valor deseas para el " + carta + "?");// texto de opciones
         dialogo.setContentText("Suma actual: " + modelo.getSumaActual() + "\n" +
                 "Sumar 1 → " + (modelo.getSumaActual() + 1) + "\n" +
                 "Sumar 10 → " + (modelo.getSumaActual() + 10));
-        //Tipo de botones
+        // Tipo de botones
         ButtonType boton1 = new ButtonType("Sumar 1");
         ButtonType boton10 = new ButtonType("Sumar 10");
         ButtonType cancelar = new ButtonType("Cancelar");
         dialogo.getButtonTypes().setAll(boton1, boton10, cancelar);
 
-        Optional<ButtonType> resultado = dialogo.showAndWait();//Esperamos la respuesta
+        Optional<ButtonType> resultado = dialogo.showAndWait();// Esperamos la respuesta
         if (resultado.isPresent()) {
-            if (resultado.get() == boton1) return 1;//No se confirma si tiene suma maxima pq algo mas ya lo hace
-            if (resultado.get() == boton10) {//Indicamos al jugador si puede o no lanzar este valor
+            if (resultado.get() == boton1)
+                return 1;// No se confirma si tiene suma maxima pq algo mas ya lo hace
+            if (resultado.get() == boton10) {// Indicamos al jugador si puede o no lanzar este valor
                 if (modelo.getSumaActual() + 10 > JuegoModelo.SUMA_MAXIMA) { // evita pasar de 50
                     mostrarAlerta("No permitido", "Sumar 10 excedería el límite de 50.");
                     return 1;
@@ -217,9 +243,10 @@ public class JuegoControlador {
     }
 
     /**
-     * Inicia y ejecuta los turnos automáticos de los oponentes máquina de forma asíncrona.
+     * Inicia y ejecuta los turnos automáticos de los oponentes máquina de forma
+     * asíncrona.
      */
-    private void ejecutarTurnosMaquinas() {//Iniciamos el turno de maquina
+    private void ejecutarTurnosMaquinas() {// Iniciamos el turno de maquina
         Thread hiloMaquina = new HiloMaquina();
         hiloMaquina.setDaemon(true);
         hiloMaquina.start();
@@ -238,7 +265,8 @@ public class JuegoControlador {
         @Override
         public void run() {
             try {
-                while (!modelo.isJuegoTerminado() && modelo.getJugadorActual().esMaquina()) { // repite mientras sea turno de máquina
+                while (!modelo.isJuegoTerminado() && modelo.getJugadorActual().esMaquina()) { // repite mientras sea
+                                                                                              // turno de máquina
                     Jugador maquina = modelo.getJugadorActual();
 
                     if (modelo.verificarEliminacion(maquina)) { // si no puede jugar, queda eliminada
@@ -257,10 +285,12 @@ public class JuegoControlador {
                     Platform.runLater(() -> lblEstado.setText(maquina.getNombre() + " está pensando..."));
                     Thread.sleep(350 + random.nextInt(500)); // simula "pensar"
 
-                    List<Carta> jugables = maquina.obtenerCartasJugables(modelo.getSumaActual());//Cartas en su mano
+                    List<Carta> jugables = maquina.obtenerCartasJugables(modelo.getSumaActual());// Cartas en su mano
                     if (!jugables.isEmpty()) { // juega una carta aleatoria de las válidas
                         Carta cartaElegida = jugables.get(random.nextInt(jugables.size()));
-                        int valorAs = (cartaElegida.esAs() && modelo.getSumaActual() + 10 <= JuegoModelo.SUMA_MAXIMA) ? 10 : 1; // AS = 10 si no se pasa
+                        int valorAs = (cartaElegida.esAs() && modelo.getSumaActual() + 10 <= JuegoModelo.SUMA_MAXIMA)
+                                ? 10
+                                : 1; // AS = 10 si no se pasa
                         modelo.jugarCarta(maquina, cartaElegida, valorAs);
 
                         Platform.runLater(() -> {
@@ -315,7 +345,8 @@ public class JuegoControlador {
     }
 
     /**
-     * Hilo del temporizador que lleva el control del tiempo transcurrido en segundos.
+     * Hilo del temporizador que lleva el control del tiempo transcurrido en
+     * segundos.
      *
      * @author Juan Camilo Valverde López
      * @version 1.0
@@ -323,15 +354,16 @@ public class JuegoControlador {
     private class HiloTemporizador extends Thread {
         /** Bandera para controlar el bucle principal de ejecución del hilo. */
         private volatile boolean corriendo = true;
-        
+
         /** Bandera para pausar el conteo del tiempo. */
         private volatile boolean pausado = false;
-        
+
         /** Cantidad de segundos transcurridos. */
         private int segundos = 0;
 
         /**
-         * Bucle que incrementa los segundos cada segundo mientras esté corriendo y no esté pausado.
+         * Bucle que incrementa los segundos cada segundo mientras esté corriendo y no
+         * esté pausado.
          */
         @Override
         public void run() {
@@ -341,7 +373,9 @@ public class JuegoControlador {
                     if (corriendo && !pausado) { // solo cuenta si no está pausado
                         segundos++;
                         int segs = segundos;
-                        Platform.runLater(() -> lblTemporizador.setText(segs + "s"));
+                        Platform.runLater(() -> lblTemporizador.setText(segs + "s"));// Actualiza el temporizador en la
+                                                                                     // interfaz utilizando el hilo
+                                                                                     // principal de JavaFX.
                     }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
@@ -353,22 +387,32 @@ public class JuegoControlador {
         /**
          * Detiene definitivamente el temporizador.
          */
-        public void detener() { corriendo = false; this.interrupt(); } // termina el hilo
-        
+        public void detener() {
+            corriendo = false;
+            this.interrupt();
+        } // termina el hilo
+
         /**
          * Pausa el conteo del tiempo.
          */
-        public void pausar() { pausado = true; } // congela el contador
-        
+        public void pausar() {
+            pausado = true;
+        } // congela el contador
+
         /**
          * Reanuda el conteo del tiempo.
          */
-        public void reanudar() { pausado = false; } // sigue contando
-        
+        public void reanudar() {
+            pausado = false;
+        } // sigue contando
+
         /**
          * Reinicia el conteo de segundos a cero.
          */
-        public void reiniciar() { segundos = 0; Platform.runLater(() -> lblTemporizador.setText("0s")); } // vuelve a 0
+        public void reiniciar() {
+            segundos = 0;
+            Platform.runLater(() -> lblTemporizador.setText("0s"));
+        } // vuelve a 0
     }
 
     /**
@@ -379,37 +423,41 @@ public class JuegoControlador {
         hiloTemporizador.setDaemon(true);
         hiloTemporizador.start();
     }
-    
+
     /**
      * Reinicia el temporizador de juego a cero segundos.
      */
     private void reiniciarTemporizador() {
-        if (hiloTemporizador != null) hiloTemporizador.reiniciar();
+        if (hiloTemporizador != null)
+            hiloTemporizador.reiniciar();
     }
-    
+
     /**
      * Pausa el conteo de tiempo del temporizador.
      */
     private void pausarTemporizador() {
-        if (hiloTemporizador != null) hiloTemporizador.pausar();
+        if (hiloTemporizador != null)
+            hiloTemporizador.pausar();
     }
-    
+
     /**
      * Reanuda el temporizador pausado previamente.
      */
     private void reanudarTemporizador() {
-        if (hiloTemporizador != null) hiloTemporizador.reanudar();
+        if (hiloTemporizador != null)
+            hiloTemporizador.reanudar();
     }
 
     /**
      * Declara el fin del juego, detiene el temporizador y muestra el ganador.
      */
-    private void finalizarJuego() {//Fin
+    private void finalizarJuego() {// Fin
         if (hiloTemporizador != null) {
             hiloTemporizador.detener(); // ya no cuenta tiempo
         }
         turnoHumano = false;
-        Jugador ganador = modelo.obtenerGanador();
+        Jugador ganador = modelo.obtenerGanador(); // Obtiene el jugador que logró permanecer activo hasta el final de
+                                                   // la partida.
         if (ganador != null) { // muestra resultado final
             String mensaje = "🏆 ¡" + ganador.getNombre() + " GANA la partida! 🏆";
             lblEstado.setText(mensaje);
@@ -429,7 +477,10 @@ public class JuegoControlador {
             hiloTemporizador.detener();
         }
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("inicio-view.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("inicio-view.fxml")); // Carga nuevamente la
+                                                                                            // pantalla inicial para
+                                                                                            // permitir comenzar otra
+                                                                                            // partida.
             Parent vistaInicio = loader.load();
             Stage stage = (Stage) btnNuevaPartida.getScene().getWindow();
             stage.setScene(new Scene(vistaInicio, 600, 500));
@@ -438,11 +489,12 @@ public class JuegoControlador {
             System.err.println("Error al cargar la vista de inicio: " + e.getMessage());
         }
     }
-    
+
     /**
-     * Muestra una ventana de alerta de tipo informativo con un título y mensaje específico.
+     * Muestra una ventana de alerta de tipo informativo con un título y mensaje
+     * específico.
      *
-     * @param titulo Título de la alerta.
+     * @param titulo  Título de la alerta.
      * @param mensaje Detalle explicativo de la alerta.
      */
     private void mostrarAlerta(String titulo, String mensaje) {
